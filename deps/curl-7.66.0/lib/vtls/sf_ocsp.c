@@ -635,7 +635,7 @@ static OCSP_RESPONSE * queryResponderUsingCurl(char *url, OCSP_CERTID *certid, c
   OPENSSL_free(port);
   OPENSSL_free(path);
 
-  infof(data, "OCSP fetch URL: %s", urlbuf);
+  infof(data, "OCSP fetch URL: %s\n", urlbuf);
 
   /* allocate another curl handle for ocsp checking */
   ocsp_curl = curl_easy_init();
@@ -684,7 +684,7 @@ static OCSP_RESPONSE * queryResponderUsingCurl(char *url, OCSP_CERTID *certid, c
         curl_easy_getinfo(ocsp_curl, CURLINFO_RESPONSE_CODE, &response_code);
         if (response_code >= 200 && response_code < 300)
         {
-          infof(data, "OCSP request returned with http status code 2XX");
+          infof(data, "OCSP request returned with http status code 2XX\n");
           curl_success = 1;
           break;
         }
@@ -834,7 +834,7 @@ char* encodeOCSPCertIDToBase64(OCSP_CERTID *certid, struct Curl_easy *data)
                               &ret, &encode_len);
   if (result != CURLE_OK)
   {
-    infof(data, "Failed to encode OCSP CertId to base64: %s",
+    infof(data, "Failed to encode OCSP CertId to base64: %s\n",
           curl_easy_strerror(result));
   }
 end:
@@ -859,7 +859,7 @@ char *encodeOCSPRequestToBase64(OCSP_REQUEST *reqp, struct Curl_easy *data)
   len = i2d_OCSP_REQUEST(reqp, &der_buf);
   if (len <= 0 || der_buf == NULL)
   {
-    infof(data, "Failed to encode OCSP response");
+    infof(data, "Failed to encode OCSP response\n");
     goto end;
   }
 
@@ -867,7 +867,7 @@ char *encodeOCSPRequestToBase64(OCSP_REQUEST *reqp, struct Curl_easy *data)
                               &ret, &encode_len);
   if (result != CURLE_OK)
   {
-    infof(data, "Failed to encode OCSP response to base64: %s",
+    infof(data, "Failed to encode OCSP response to base64: %s\n",
           curl_easy_strerror(result));
     goto end;
   }
@@ -894,7 +894,7 @@ char *encodeOCSPResponseToBase64(OCSP_RESPONSE* resp, struct Curl_easy *data)
   len = i2d_OCSP_RESPONSE(resp, &der_buf);
   if (len <= 0 || der_buf == NULL)
   {
-    infof(data, "Failed to encode OCSP response");
+    infof(data, "Failed to encode OCSP response\n");
     goto end;
   }
 
@@ -902,7 +902,7 @@ char *encodeOCSPResponseToBase64(OCSP_RESPONSE* resp, struct Curl_easy *data)
                               &ret, &encode_len);
   if (result != CURLE_OK)
   {
-    infof(data, "Failed to encode OCSP response to base64: %s",
+    infof(data, "Failed to encode OCSP response to base64: %s\n",
           curl_easy_strerror(result));
     goto end;
   }
@@ -934,7 +934,7 @@ OCSP_CERTID* decodeOCSPCertIDFromBase64(char* src, struct Curl_easy *data)
                               &ocsp_certid_der, &ocs_certid_der_len);
   if (result != CURLE_OK)
   {
-    infof(data, "Failed to decode OCSP CertID in the cache. Ignored: %s",
+    infof(data, "Failed to decode OCSP CertID in the cache. Ignored: %s\n",
           curl_easy_strerror(result));
     return NULL;
   }
@@ -1936,6 +1936,10 @@ void initOCSPCacheServer(struct Curl_easy *data)
   {
     /* OCSP Cache server enabled by default */
     ocsp_cache_server_enabled = 1;
+  }
+  else
+  {
+    ocsp_cache_server_enabled = 0;
   }
 
   ocsp_cache_server_url_env = getenv(
